@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import bcrypt from 'bcryptjs';
+import mongoose, { Document, Schema } from 'mongoose';
+import * as bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
   email: string;
@@ -71,8 +71,11 @@ const userSchema = new Schema<IUser>({
 }, {
   timestamps: true,
   toJSON: {
-    transform: function(doc, ret) {
-      ret.password = undefined;
+    transform: function(doc, ret: any) {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.__v;
+      delete ret.password;
       return ret;
     }
   }

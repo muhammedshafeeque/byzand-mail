@@ -28,9 +28,9 @@ export const upload = multer({
     files: UPLOAD_CONFIG.MAX_FILES
   },
   fileFilter: (req, file, cb) => {
-    // Check file type
-    if (!UPLOAD_CONFIG.ALLOWED_TYPES.includes(file.mimetype)) {
-      return cb(new Error('File type not allowed'));
+    // Validate file type
+    if (!UPLOAD_CONFIG.ALLOWED_TYPES.includes(file.mimetype as any)) {
+      return cb(new Error(`File type ${file.mimetype} is not allowed`));
     }
 
     // Check file size

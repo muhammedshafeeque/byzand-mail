@@ -2,6 +2,7 @@ import { IUser, IUserResponse, IRegisterRequest, ILoginRequest } from '../types/
 import { generateToken } from '../utils/index.js';
 import { EMAIL_QUOTA } from '../constants/index.js';
 import { User, IUser as IUserModel } from '../models/User.js';
+import bcrypt from 'bcryptjs';
 
 export class AuthService {
   // Register new user
@@ -32,10 +33,7 @@ export class AuthService {
 
     // Generate token
     const token = generateToken(user);
-
-    // Remove password from response
-    const { password, ...userResponse } = user.toObject();
-
+    const userResponse = this.toUserResponse(user);
     return { user: userResponse, token };
   }
 
@@ -60,10 +58,7 @@ export class AuthService {
 
     // Generate token
     const token = generateToken(user);
-
-    // Remove password from response
-    const { password, ...userResponse } = user.toObject();
-
+    const userResponse = this.toUserResponse(user);
     return { user: userResponse, token };
   }
 
@@ -84,18 +79,22 @@ export class AuthService {
       throw new Error('User not found');
     }
 
-    // Update user data (excluding sensitive fields)
-    Object.assign(user, updateData);
-    user.updatedAt = new Date();
+    // Update user fields
+    if (updateData.firstName) user.firstName = updateData.firstName;
+    if (updateData.lastName) user.lastName = updateData.lastName;
+    if (updateData.username) user.username = updateData.username;
+    
+    // Update timestamps
+    (user as any).updatedAt = new Date();
+    
     await user.save();
-
-    // Remove password from response
-    const { password, ...userResponse } = user.toObject();
+    
+    const userResponse = this.toUserResponse(user);
     return userResponse;
   }
 
   // Change user password
-  static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+  static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{ message: string }> {
     const user = await User.findById(userId);
     if (!user) {
       throw new Error('User not found');
@@ -107,10 +106,13 @@ export class AuthService {
       throw new Error('Current password is incorrect');
     }
 
-    // Update password (will be hashed by pre-save hook)
-    user.password = newPassword;
-    user.updatedAt = new Date();
+    // Update password
+    user.password = await bcrypt.hash(newPassword, 12);
+    (user as any).updatedAt = new Date();
+    
     await user.save();
+    
+    return { message: 'Password changed successfully' };
   }
 
   // Deactivate user
@@ -139,11 +141,9 @@ export class AuthService {
 
   // Get all users (admin only)
   static async getAllUsers(): Promise<IUserResponse[]> {
-    const users = await User.find({});
-    return users.map(user => {
-      const { password, ...userResponse } = user.toObject();
-      return userResponse;
-    });
+    const users = await User.find({ isActive: true }).select('-password');
+    
+    return users.map(user => this.toUserResponse(user));
   }
 
   // Update user quota
@@ -158,7 +158,7 @@ export class AuthService {
     }
 
     user.emailQuota = newQuota;
-    user.updatedAt = new Date();
+    (user as any).updatedAt = new Date();
     await user.save();
   }
 
@@ -184,6 +184,23 @@ export class AuthService {
       userQuota: user.emailQuota,
       usedQuota: user.usedQuota,
       quotaUsagePercentage: (user.usedQuota / user.emailQuota) * 100
+    };
+  }
+
+  // Convert user document to response format
+  private static toUserResponse(user: IUser): IUserResponse {
+    return {
+      _id: user._id.toString(),
+      email: user.email,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      isActive: user.isActive,
+      isAdmin: user.isAdmin,
+      emailQuota: user.emailQuota,
+      usedQuota: user.usedQuota,
+      createdAt: user.createdAt || new Date(),
+      updatedAt: user.updatedAt || new Date()
     };
   }
 }

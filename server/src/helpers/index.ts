@@ -5,49 +5,19 @@ import { verifyToken, validateRequiredFields, validateEmail, validatePassword } 
 import { JWT_CONFIG } from '../configs/index.js';
 
 // Authentication helper
-export const authenticateUser = (req: IAuthRequest, res: Response, next: NextFunction) => {
+export const authenticateUser = (req: IAuthRequest, res: Response, next: NextFunction): void => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
     if (!token) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-        success: false,
-        error: MESSAGES.ERROR.TOKEN_REQUIRED
-      });
+      return sendErrorResponse(res, 'Access token required', HTTP_STATUS.UNAUTHORIZED);
     }
-
-    const decoded = verifyToken(token);
-    if (!decoded) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-        success: false,
-        error: MESSAGES.ERROR.TOKEN_INVALID
-      });
-    }
-
-    // In a real app, you would fetch user from database
-    // For now, we'll use a mock user
-    req.user = {
-      id: decoded.userId,
-      email: decoded.email,
-      username: decoded.username,
-      isAdmin: decoded.isAdmin,
-      // Add other required fields
-      password: '',
-      firstName: '',
-      lastName: '',
-      isActive: true,
-      emailQuota: 1024 * 1024 * 1024, // 1GB
-      usedQuota: 0,
-      createdAt: new Date()
-    };
-
+    
+    const decoded = verifyToken(token) as any;
+    req.user = decoded;
     next();
   } catch (error) {
-    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-      success: false,
-      error: MESSAGES.ERROR.TOKEN_INVALID
-    });
+    return sendErrorResponse(res, 'Invalid or expired token', HTTP_STATUS.UNAUTHORIZED);
   }
 };
 

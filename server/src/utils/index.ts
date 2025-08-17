@@ -20,16 +20,16 @@ export const validatePassword = (password: string): boolean => {
 
 // JWT utilities
 export const generateToken = (user: IUser): string => {
-  const payload: IJwtPayload = {
-    userId: user.id,
+  const payload = {
+    userId: user._id,
     email: user.email,
     username: user.username,
     isAdmin: user.isAdmin
   };
-
+  
   return jwt.sign(payload, JWT_CONFIG.SECRET, {
     expiresIn: JWT_CONFIG.EXPIRES_IN,
-    algorithm: JWT_CONFIG.ALGORITHM
+    algorithm: JWT_CONFIG.ALGORITHM as any
   });
 };
 
@@ -202,9 +202,10 @@ export const createErrorResponse = (error: string, statusCode: number = 500) => 
 // Storage utilities
 export const calculateStorageUsed = (emails: IEmail[]): number => {
   return emails.reduce((total, email) => {
-    const emailSize = email.text?.length || 0 + email.html?.length || 0;
+    const textSize = email.text?.length || 0;
+    const htmlSize = email.html?.length || 0;
     const attachmentSize = email.attachments?.reduce((sum, att) => sum + att.size, 0) || 0;
-    return total + emailSize + attachmentSize;
+    return total + textSize + htmlSize + attachmentSize;
   }, 0);
 };
 
