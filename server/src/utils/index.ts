@@ -21,14 +21,14 @@ export const validatePassword = (password: string): boolean => {
 // JWT utilities
 export const generateToken = (user: IUser): string => {
   const payload = {
-    userId: user._id.toString(),
+    userId: (user._id as any).toString(),
     email: user.email,
     username: user.username,
     isAdmin: user.isAdmin
   };
   
   const options: SignOptions = {
-    expiresIn: JWT_CONFIG.EXPIRES_IN
+    expiresIn: JWT_CONFIG.EXPIRES_IN as string
   };
   
   return jwt.sign(payload, JWT_CONFIG.SECRET, options);

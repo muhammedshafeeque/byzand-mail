@@ -189,7 +189,7 @@ export class AuthService {
   // Convert user document to response format
   private static toUserResponse(user: IUser): IUserResponse {
     return {
-      id: user._id.toString(),
+      id: (user._id as any).toString(),
       email: user.email,
       username: user.username,
       firstName: user.firstName,
