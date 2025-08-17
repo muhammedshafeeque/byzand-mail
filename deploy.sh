@@ -122,6 +122,12 @@ if [ -d "client" ]; then
     cd ..
 fi
 
+# Copy React build files to Nginx serving directory
+echo "📁 Copying React build files..."
+sudo mkdir -p /var/www/mail.byzand.online/html
+sudo cp -r client/dist/* /var/www/mail.byzand.online/html/
+sudo chown -R $USER:$USER /var/www/mail.byzand.online/html
+
 # Create uploads directory
 sudo mkdir -p $APP_DIR/server/uploads
 sudo mkdir -p $APP_DIR/server/src/uploads
