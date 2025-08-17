@@ -109,6 +109,12 @@ RATE_LIMIT_MAX_REQUESTS=100
 LOG_LEVEL=info
 EOF
 
+# Create client environment file
+echo "⚙️ Creating client environment..."
+sudo tee $APP_DIR/client/.env.production > /dev/null <<EOF
+VITE_API_URL=https://mail.byzand.online/api
+EOF
+
 # Create uploads directory
 sudo mkdir -p $APP_DIR/server/uploads
 sudo mkdir -p $APP_DIR/server/src/uploads
