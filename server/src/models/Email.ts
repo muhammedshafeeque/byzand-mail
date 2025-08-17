@@ -141,8 +141,7 @@ const emailSchema = new Schema<IEmail>({
     required: true
   },
   threadId: {
-    type: String,
-    index: true
+    type: String
   },
   spamScore: {
     type: Number,

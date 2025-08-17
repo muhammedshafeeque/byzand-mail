@@ -27,7 +27,7 @@ const userSchema = new Schema<IUser>({
     unique: true,
     lowercase: true,
     trim: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+    match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please enter a valid email']
   },
   username: {
     type: String,
@@ -85,10 +85,7 @@ const userSchema = new Schema<IUser>({
   }
 });
 
-// Indexes for better query performance
-userSchema.index({ email: 1 });
-userSchema.index({ username: 1 });
-userSchema.index({ isActive: 1 });
+// Indexes for better query performance (removed duplicates)
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
