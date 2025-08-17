@@ -182,6 +182,12 @@ fi
 echo "🔄 Reloading Nginx..."
 sudo systemctl reload nginx
 
+# Copy Nginx configuration
+echo "⚙️ Updating Nginx configuration..."
+sudo cp $APP_DIR/nginx.conf /etc/nginx/sites-available/mail.byzand.online
+sudo ln -sf /etc/nginx/sites-available/mail.byzand.online /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+
 echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
 echo -e "${YELLOW}📧 Your email client is now available at: https://mail.byzand.online${NC}"
 echo -e "${YELLOW}📊 PM2 Status: pm2 status${NC}"
