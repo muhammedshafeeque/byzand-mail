@@ -76,7 +76,6 @@ if [ -d "client" ]; then
     echo "📦 Installing client dependencies..."
     cd client
     npm install
-    npm run build
     cd ..
 fi
 
@@ -114,6 +113,14 @@ echo "⚙️ Creating client environment..."
 sudo tee $APP_DIR/client/.env.production > /dev/null <<EOF
 VITE_API_URL=https://mail.byzand.online/api
 EOF
+
+# Build client with production environment
+if [ -d "client" ]; then
+    echo "🔨 Building client with production environment..."
+    cd client
+    npm run build
+    cd ..
+fi
 
 # Create uploads directory
 sudo mkdir -p $APP_DIR/server/uploads
