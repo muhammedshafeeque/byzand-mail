@@ -2,7 +2,7 @@ import { Request } from 'express';
 
 // User interfaces
 export interface IUser {
-  _id: string;
+  _id: unknown;
   email: string;
   username: string;
   password: string;

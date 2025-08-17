@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { JWT_CONFIG, SECURITY_CONFIG } from '../configs/index.js';
 import { IUser, IJwtPayload, IEmail } from '../types/index.js';
@@ -27,9 +27,11 @@ export const generateToken = (user: IUser): string => {
     isAdmin: user.isAdmin
   };
   
-  return jwt.sign(payload, JWT_CONFIG.SECRET as string, {
+  const options: SignOptions = {
     expiresIn: JWT_CONFIG.EXPIRES_IN
-  });
+  };
+  
+  return jwt.sign(payload, JWT_CONFIG.SECRET, options);
 };
 
 export const verifyToken = (token: string): IJwtPayload | null => {
