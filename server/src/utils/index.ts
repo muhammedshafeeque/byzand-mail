@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcryptjs';
+const bcrypt = require('bcryptjs');
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { JWT_CONFIG, SECURITY_CONFIG } from '../configs/index.js';
