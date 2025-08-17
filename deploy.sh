@@ -65,8 +65,28 @@ sudo chown -R $USER:$USER $APP_DIR
 # Install dependencies
 echo "📦 Installing dependencies..."
 cd $APP_DIR
-npm install
-cd client && npm install && npm run build && cd ..
+
+# Install root dependencies
+if [ -f "package.json" ]; then
+    npm install
+fi
+
+# Install client dependencies
+if [ -d "client" ]; then
+    echo "📦 Installing client dependencies..."
+    cd client
+    npm install
+    npm run build
+    cd ..
+fi
+
+# Install server dependencies
+if [ -d "server" ]; then
+    echo "📦 Installing server dependencies..."
+    cd server
+    npm install
+    cd ..
+fi
 
 # Create production environment file
 echo "⚙️ Creating production environment..."
@@ -121,7 +141,11 @@ EOF
 # Build the application
 echo "🔨 Building application..."
 cd $APP_DIR
-npm run build:server
+if [ -d "server" ]; then
+    cd server
+    npm run build
+    cd ..
+fi
 
 # Start/restart the application with PM2
 echo "🚀 Starting application with PM2..."
