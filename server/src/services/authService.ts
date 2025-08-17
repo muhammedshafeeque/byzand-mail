@@ -2,7 +2,7 @@ import { IUser, IUserResponse, IRegisterRequest, ILoginRequest } from '../types/
 import { generateToken } from '../utils/index.js';
 import { EMAIL_QUOTA } from '../constants/index.js';
 import { User, IUser as IUserModel } from '../models/User.js';
-const bcrypt = require('bcryptjs');
+import { hash } from 'bcryptjs';
 
 export class AuthService {
   // Register new user
@@ -104,7 +104,7 @@ export class AuthService {
     }
 
     // Update password
-    user.password = await bcrypt.hash(newPassword, 12);
+    user.password = await hash(newPassword, 12);
     
     await user.save();
     

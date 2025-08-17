@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-const bcryptjs = require('bcryptjs');
+import { genSalt, hash, compare } from 'bcryptjs';
 
 export interface IUser extends Document {
   email: string;
@@ -93,8 +93,8 @@ userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
   try {
-    const salt = await bcryptjs.genSalt(12);
-    this.password = await bcryptjs.hash(this.password, salt);
+    const salt = await genSalt(12);
+    this.password = await hash(this.password, salt);
     next();
   } catch (error) {
     next(error as Error);
@@ -103,7 +103,7 @@ userSchema.pre('save', async function(next) {
 
 // Compare password method
 userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcryptjs.compare(candidatePassword, this.password);
+  return compare(candidatePassword, this.password);
 };
 
 // Virtual for full name
