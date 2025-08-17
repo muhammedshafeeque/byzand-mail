@@ -62,7 +62,7 @@ export class AuthController {
   // Get user profile
   static async getProfile(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const user = await AuthService.getUserById(userId);
 
       if (!user) {
@@ -86,7 +86,7 @@ export class AuthController {
   // Update user profile
   static async updateProfile(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const updateData = req.body;
 
       // Remove sensitive fields from update data
@@ -114,7 +114,7 @@ export class AuthController {
   // Change password
   static async changePassword(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const { currentPassword, newPassword } = req.body;
 
       if (!currentPassword || !newPassword) {
@@ -141,7 +141,7 @@ export class AuthController {
   // Get user statistics (admin only)
   static async getUserStats(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const stats = AuthService.getUserStats(userId);
 
       return sendSuccessResponse(res, stats);
@@ -158,7 +158,7 @@ export class AuthController {
   // Get all users (admin only)
   static async getAllUsers(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       
       // Check if user is admin
       if (!AuthService.isAdmin(userId)) {
