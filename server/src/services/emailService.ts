@@ -4,6 +4,7 @@ import { EMAIL_FOLDERS, PAGINATION } from '../constants/index.js';
 import { AuthService } from './authService.js';
 import { Email, IEmail as IEmailModel } from '../models/Email.js';
 import { IUser as IUserModel } from '../models/User.js';
+import { MailService } from './mailService.js';
 
 export class EmailService {
   // Send email
@@ -55,14 +56,48 @@ export class EmailService {
 
     await email.save();
 
-    // Update user quota
-    user.updateQuota(totalSize);
-    await user.save();
+    // Send email via SMTP
+    try {
+      const mailData: any = {
+        from: user.email,
+        to: recipients,
+        subject: emailData.subject,
+        attachments: attachments.map(att => ({
+          filename: att.filename,
+          path: att.path,
+          contentType: att.contentType
+        }))
+      };
 
-    return {
-      messageId: email.messageId,
-      sentAt: email.sentAt!
-    };
+      if (ccRecipients.length > 0) {
+        mailData.cc = ccRecipients;
+      }
+      if (bccRecipients.length > 0) {
+        mailData.bcc = bccRecipients;
+      }
+      if (emailData.text) {
+        mailData.text = emailData.text;
+      }
+      if (emailData.html) {
+        mailData.html = emailData.html;
+      }
+
+      await MailService.sendEmail(mailData);
+      
+      // Update user quota
+      user.updateQuota(totalSize);
+      await user.save();
+
+      return {
+        messageId: email.messageId,
+        sentAt: email.sentAt!
+      };
+    } catch (error) {
+      // If SMTP fails, still save the email but mark it as failed
+      email.folder = 'drafts'; // Move to drafts if sending fails
+      await email.save();
+      throw new Error(`Failed to send email: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   // Get emails with filters and pagination

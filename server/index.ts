@@ -83,6 +83,36 @@ app.get('/health', (_req: Request, res: Response) => {
   });
 });
 
+// Mail service test endpoint
+app.get('/mail-test', async (_req: Request, res: Response) => {
+  try {
+    const { MailService } = await import('./src/services/mailService.js');
+    const config = MailService.getConfig();
+    const isConnected = await MailService.testConnection();
+    
+    res.json({
+      success: true,
+      message: 'Mail service test completed',
+      config: {
+        host: config.host,
+        port: config.port,
+        secure: config.secure,
+        user: config.user,
+        from: config.from
+      },
+      connected: isConnected,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Mail service test failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // API info endpoint
 app.get('/api', (_req: Request, res: Response) => {
   res.json({
