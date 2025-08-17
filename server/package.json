@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch index.ts",
-    "start": "node index.js",
+    "start": "npm run build && node dist/index.js",
     "build": "tsc",
     "build:server": "tsc",
     "build:client": "cd ../client && npm run build"
