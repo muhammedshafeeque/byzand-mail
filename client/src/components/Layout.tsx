@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { emailAPI } from '../services/api';
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
@@ -23,6 +24,15 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [emailCounts, setEmailCounts] = useState({
+    inbox: 0,
+    starred: 0,
+    sent: 0,
+    drafts: 0,
+    spam: 0,
+    trash: 0,
+    archive: 0
+  });
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -32,6 +42,31 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     navigate('/login');
   };
 
+  // Fetch email counts
+  useEffect(() => {
+    const fetchEmailCounts = async () => {
+      try {
+        const response = await emailAPI.getStats();
+        const stats = response.data.data;
+        setEmailCounts({
+          inbox: stats.totalEmails - stats.sentEmails - stats.spamEmails,
+          starred: stats.starredEmails,
+          sent: stats.sentEmails,
+          drafts: 0, // We'll need to implement drafts count separately
+          spam: stats.spamEmails,
+          trash: 0, // We'll need to implement trash count separately
+          archive: 0 // We'll need to implement archive count separately
+        });
+      } catch (error) {
+        console.error('Failed to fetch email counts:', error);
+      }
+    };
+
+    if (user) {
+      fetchEmailCounts();
+    }
+  }, [user]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement search functionality
@@ -39,13 +74,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const navigation = [
-    { name: 'Inbox', href: '/dashboard', icon: InboxIcon, count: 12 },
-    { name: 'Starred', href: '/dashboard?folder=starred', icon: StarIcon, count: 0 },
-    { name: 'Sent', href: '/dashboard?folder=sent', icon: PaperAirplaneIcon, count: 0 },
-    { name: 'Drafts', href: '/dashboard?folder=drafts', icon: FolderIcon, count: 2 },
-    { name: 'Spam', href: '/dashboard?folder=spam', icon: ExclamationTriangleIcon, count: 0 },
-    { name: 'Trash', href: '/dashboard?folder=trash', icon: TrashIcon, count: 0 },
-    { name: 'Archive', href: '/dashboard?folder=archive', icon: ArchiveBoxIcon, count: 0 },
+    { name: 'Inbox', href: '/dashboard', icon: InboxIcon, count: emailCounts.inbox },
+    { name: 'Starred', href: '/dashboard?folder=starred', icon: StarIcon, count: emailCounts.starred },
+    { name: 'Sent', href: '/dashboard?folder=sent', icon: PaperAirplaneIcon, count: emailCounts.sent },
+    { name: 'Drafts', href: '/dashboard?folder=drafts', icon: FolderIcon, count: emailCounts.drafts },
+    { name: 'Spam', href: '/dashboard?folder=spam', icon: ExclamationTriangleIcon, count: emailCounts.spam },
+    { name: 'Trash', href: '/dashboard?folder=trash', icon: TrashIcon, count: emailCounts.trash },
+    { name: 'Archive', href: '/dashboard?folder=archive', icon: ArchiveBoxIcon, count: emailCounts.archive },
   ];
 
   return (

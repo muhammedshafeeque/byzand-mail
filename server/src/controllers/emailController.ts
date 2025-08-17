@@ -183,7 +183,7 @@ export class EmailController {
   // Get email statistics
   static async getEmailStats(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const stats = await EmailService.getEmailStats(userId);
 
       return sendSuccessResponse(res, stats);
@@ -200,7 +200,7 @@ export class EmailController {
   // Mark email as spam/not spam
   static async markAsSpam(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const { id } = req.params;
       if (!id) {
         return sendErrorResponse(res, 'Email ID is required', HTTP_STATUS.BAD_REQUEST);
@@ -231,7 +231,7 @@ export class EmailController {
   // Update email labels
   static async updateEmailLabels(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const { id } = req.params;
       if (!id) {
         return sendErrorResponse(res, 'Email ID is required', HTTP_STATUS.BAD_REQUEST);
@@ -262,7 +262,7 @@ export class EmailController {
   // Get emails by folder
   static async getEmailsByFolder(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const { folder } = req.params;
       if (!folder) {
         return sendErrorResponse(res, 'Folder is required', HTTP_STATUS.BAD_REQUEST);
