@@ -1,4 +1,5 @@
-import { hash, compare } from 'bcryptjs';
+// Dynamic import for bcryptjs
+const bcryptjs = await import('bcryptjs');
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { JWT_CONFIG, SECURITY_CONFIG } from '../configs/index.js';
@@ -7,11 +8,11 @@ import { SPAM_DETECTION } from '../constants/index.js';
 
 // Password utilities
 export const hashPassword = async (password: string): Promise<string> => {
-  return await hash(password, SECURITY_CONFIG.BCRYPT_ROUNDS);
+  return await bcryptjs.hash(password, SECURITY_CONFIG.BCRYPT_ROUNDS);
 };
 
 export const comparePassword = async (password: string, hashedPassword: string): Promise<boolean> => {
-  return await compare(password, hashedPassword);
+  return await bcryptjs.compare(password, hashedPassword);
 };
 
 export const validatePassword = (password: string): boolean => {
