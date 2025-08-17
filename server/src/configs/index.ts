@@ -27,7 +27,7 @@ export const JWT_CONFIG = {
   SECRET: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production',
   EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   ALGORITHM: 'HS256'
-} as const;
+};
 
 // Email server configuration
 export const EMAIL_CONFIG = {
