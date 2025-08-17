@@ -2,7 +2,7 @@ import { IUser, IUserResponse, IRegisterRequest, ILoginRequest } from '../types/
 import { generateToken } from '../utils/index.js';
 import { EMAIL_QUOTA } from '../constants/index.js';
 import { User, IUser as IUserModel } from '../models/User.js';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 
 export class AuthService {
   // Register new user
