@@ -20,7 +20,7 @@ const createTransporter = () => {
     };
   }
 
-  return nodemailer.createTransporter(config);
+  return nodemailer.createTransport(config);
 };
 
 export class MailService {
