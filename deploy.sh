@@ -95,12 +95,12 @@ PORT=3003
 MONGODB_URI=mongodb://localhost:27017/byzand-mail
 JWT_SECRET=your-super-secure-jwt-secret-key-change-this-in-production
 JWT_EXPIRES_IN=7d
-# Local TLS Mail Service Configuration
+# Local Mail Service Configuration (working with mail command)
 EMAIL_HOST=localhost
-EMAIL_PORT=587
+EMAIL_PORT=25
 EMAIL_SECURE=false
 EMAIL_USER=admin@byzand.online
-EMAIL_PASS=your-local-mail-password
+EMAIL_PASS=
 EMAIL_FROM=admin@byzand.online
 UPLOAD_PATH=./uploads
 MAX_FILE_SIZE=10485760

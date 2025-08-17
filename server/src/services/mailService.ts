@@ -3,18 +3,24 @@ import { EMAIL_CONFIG } from '../configs/index.js';
 
 // Create transporter for sending emails
 const createTransporter = () => {
-  return nodemailer.createTransporter({
+  const config: any = {
     host: EMAIL_CONFIG.HOST,
     port: EMAIL_CONFIG.PORT,
     secure: EMAIL_CONFIG.SECURE, // true for 465, false for other ports
-    auth: {
-      user: EMAIL_CONFIG.USER,
-      pass: EMAIL_CONFIG.PASS,
-    },
     tls: {
       rejectUnauthorized: false // Allow self-signed certificates
     }
-  });
+  };
+
+  // Only add auth if username and password are provided
+  if (EMAIL_CONFIG.USER && EMAIL_CONFIG.PASS) {
+    config.auth = {
+      user: EMAIL_CONFIG.USER,
+      pass: EMAIL_CONFIG.PASS,
+    };
+  }
+
+  return nodemailer.createTransporter(config);
 };
 
 export class MailService {
@@ -85,3 +91,4 @@ export class MailService {
     };
   }
 }
+
