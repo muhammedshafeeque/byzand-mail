@@ -28,7 +28,7 @@ export const generateToken = (user: IUser): string => {
   };
   
   const options: SignOptions = {
-    expiresIn: JWT_CONFIG.EXPIRES_IN
+    expiresIn: JWT_CONFIG.EXPIRES_IN as any
   };
   
   return jwt.sign(payload, JWT_CONFIG.SECRET, options);
