@@ -11,9 +11,11 @@ export interface IUser extends Document {
   isAdmin: boolean;
   emailQuota: number;
   usedQuota: number;
+  createdAt: Date;
+  updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
   hasQuota(requiredBytes: number): boolean;
-  updateQuota(bytes: number): void;
+  updateQuota(usedBytes: number): void;
 }
 
 const userSchema = new Schema<IUser>({

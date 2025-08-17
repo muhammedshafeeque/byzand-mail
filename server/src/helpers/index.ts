@@ -5,19 +5,21 @@ import { verifyToken, validateRequiredFields, validateEmail, validatePassword } 
 import { JWT_CONFIG } from '../configs/index.js';
 
 // Authentication helper
-export const authenticateUser = (req: IAuthRequest, res: Response, next: NextFunction): void => {
+export const authenticateUser = (req: IAuthRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
     
     if (!token) {
-      return sendErrorResponse(res, 'Access token required', HTTP_STATUS.UNAUTHORIZED);
+      sendErrorResponse(res, 'Access token required', HTTP_STATUS.UNAUTHORIZED);
+      return;
     }
     
     const decoded = verifyToken(token) as any;
     req.user = decoded;
     next();
   } catch (error) {
-    return sendErrorResponse(res, 'Invalid or expired token', HTTP_STATUS.UNAUTHORIZED);
+    sendErrorResponse(res, 'Invalid or expired token', HTTP_STATUS.UNAUTHORIZED);
+    return;
   }
 };
 

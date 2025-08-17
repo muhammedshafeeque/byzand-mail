@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { IAuthRequest } from '../types/index.js';
-import { authenticateUser } from '../helpers/index.js';
-import { sendErrorResponse } from '../utils/index.js';
+import { authenticateUser, sendErrorResponse } from '../helpers/index.js';
 import { HTTP_STATUS } from '../constants/index.js';
 
 // Authentication middleware
@@ -10,9 +9,10 @@ export const authenticateToken = (req: IAuthRequest, res: Response, next: NextFu
 };
 
 // Admin authorization middleware
-export const requireAdmin = (req: IAuthRequest, res: Response, next: NextFunction): void => {
+export const requireAdmin = (req: IAuthRequest, res: Response, next: NextFunction) => {
   if (!req.user || !req.user.isAdmin) {
-    return sendErrorResponse(res, 'Admin access required', HTTP_STATUS.FORBIDDEN);
+    sendErrorResponse(res, 'Admin access required', HTTP_STATUS.FORBIDDEN);
+    return;
   }
   next();
 };

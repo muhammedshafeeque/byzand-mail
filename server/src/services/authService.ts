@@ -84,9 +84,6 @@ export class AuthService {
     if (updateData.lastName) user.lastName = updateData.lastName;
     if (updateData.username) user.username = updateData.username;
     
-    // Update timestamps
-    (user as any).updatedAt = new Date();
-    
     await user.save();
     
     const userResponse = this.toUserResponse(user);
@@ -108,7 +105,6 @@ export class AuthService {
 
     // Update password
     user.password = await bcrypt.hash(newPassword, 12);
-    (user as any).updatedAt = new Date();
     
     await user.save();
     
@@ -147,7 +143,7 @@ export class AuthService {
   }
 
   // Update user quota
-  static async updateUserQuota(userId: string, newQuota: number): Promise<void> {
+  static async updateUserQuota(userId: string, newQuota: number): Promise<{ message: string }> {
     const user = await User.findById(userId);
     if (!user) {
       throw new Error('User not found');
@@ -157,9 +153,12 @@ export class AuthService {
       throw new Error('New quota cannot be less than used quota');
     }
 
-    user.emailQuota = newQuota;
-    (user as any).updatedAt = new Date();
+    // Update quota
+    user.usedQuota = newQuota;
+    
     await user.save();
+    
+    return { message: 'Quota updated successfully' };
   }
 
   // Check if user has admin privileges
@@ -190,7 +189,7 @@ export class AuthService {
   // Convert user document to response format
   private static toUserResponse(user: IUser): IUserResponse {
     return {
-      _id: user._id.toString(),
+      id: user._id.toString(),
       email: user.email,
       username: user.username,
       firstName: user.firstName,
