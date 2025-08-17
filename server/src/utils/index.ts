@@ -27,7 +27,7 @@ export const generateToken = (user: IUser): string => {
     isAdmin: user.isAdmin
   };
   
-  return jwt.sign(payload, JWT_CONFIG.SECRET, {
+  return jwt.sign(payload, JWT_CONFIG.SECRET as string, {
     expiresIn: JWT_CONFIG.EXPIRES_IN
   });
 };
