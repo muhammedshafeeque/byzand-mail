@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
-
-// Dynamic import for bcryptjs
-const bcryptjs = await import('bcryptjs');
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const bcryptjs = require('bcryptjs');
 
 export interface IUser extends Document {
   email: string;

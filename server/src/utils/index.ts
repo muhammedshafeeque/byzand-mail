@@ -1,5 +1,6 @@
-// Dynamic import for bcryptjs
-const bcryptjs = await import('bcryptjs');
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const bcryptjs = require('bcryptjs');
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { JWT_CONFIG, SECURITY_CONFIG } from '../configs/index.js';

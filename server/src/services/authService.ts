@@ -2,8 +2,9 @@ import { IUser, IUserResponse, IRegisterRequest, ILoginRequest } from '../types/
 import { generateToken } from '../utils/index.js';
 import { EMAIL_QUOTA } from '../constants/index.js';
 import { User, IUser as IUserModel } from '../models/User.js';
-// Dynamic import for bcryptjs
-const bcryptjs = await import('bcryptjs');
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const bcryptjs = require('bcryptjs');
 
 export class AuthService {
   // Register new user
