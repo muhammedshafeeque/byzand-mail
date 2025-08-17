@@ -120,7 +120,7 @@ sudo tee $APP_DIR/ecosystem.config.js > /dev/null <<EOF
 module.exports = {
   apps: [{
     name: 'byzand-mail',
-    script: 'server/index.js',
+    script: 'server/dist/index.js',
     cwd: '$APP_DIR',
     instances: 1,
     autorestart: true,
