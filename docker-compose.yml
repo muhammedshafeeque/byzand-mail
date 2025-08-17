@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: byzand-mail-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: your-mongodb-password
+      MONGO_INITDB_DATABASE: byzand-mail
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports:
+      - "27017:27017"
+    networks:
+      - byzand-mail-network
+
+  # Email Client Application
+  app:
+    build: .
+    container_name: byzand-mail-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://admin:your-mongodb-password@mongodb:27017/byzand-mail?authSource=admin
+      JWT_SECRET: your-super-secure-jwt-secret-key-change-this-in-production
+      JWT_EXPIRES_IN: 7d
+      EMAIL_HOST: smtp.byzand.online
+      EMAIL_PORT: 587
+      EMAIL_SECURE: false
+      EMAIL_USER: noreply@byzand.online
+      EMAIL_PASS: your-email-password
+      EMAIL_FROM: noreply@byzand.online
+      UPLOAD_PATH: ./uploads
+      MAX_FILE_SIZE: 10485760
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX_REQUESTS: 100
+      LOG_LEVEL: info
+    ports:
+      - "3000:3000"
+    volumes:
+      - app_uploads:/app/server/uploads
+    depends_on:
+      - mongodb
+    networks:
+      - byzand-mail-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: byzand-mail-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    networks:
+      - byzand-mail-network
+
+volumes:
+  mongodb_data:
+  app_uploads:
+
+networks:
+  byzand-mail-network:
+    driver: bridge
