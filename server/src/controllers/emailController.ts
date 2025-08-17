@@ -8,7 +8,7 @@ export class EmailController {
   // Get emails with filters and pagination
   static async getEmails(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const searchParams = getSearchParams(req);
       const paginationParams = getPaginationParams(req);
 
@@ -39,7 +39,7 @@ export class EmailController {
   // Get single email
   static async getEmail(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const { id } = req.params;
       if (!id) {
         return sendErrorResponse(res, 'Email ID is required', HTTP_STATUS.BAD_REQUEST);
@@ -65,7 +65,7 @@ export class EmailController {
   // Send email
   static async sendEmail(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.id;
+      const userId = (req as any).user.userId;
       const emailData = req.body;
       const files = (req.files as any[]) || [];
 
